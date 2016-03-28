@@ -50,6 +50,7 @@ public class ChannelListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initDaos();
         setContentView(R.layout.channel_list_activity);
 
         // TODO: 28.03.2016 ButterKnife
@@ -64,6 +65,10 @@ public class ChannelListActivity extends AppCompatActivity {
 
 //        getChannelSchedule();
 
+    }
+
+    private void initDaos() {
+//        new ChannelsDao(App.retrofit().create(I))
     }
 
     private void loadAndDisplayChannelsData() {
