@@ -2,8 +2,8 @@ package com.demo.rovi.roviapidemo.utils;
 
 import android.util.Log;
 
-import com.bumptech.glide.Glide;
 import com.demo.rovi.roviapidemo.model.ApiEndpointInterface;
+import com.demo.rovi.roviapidemo.model.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.TvChannels.Channel;
 import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
 import com.google.gson.Gson;
@@ -36,15 +36,13 @@ public class TvApi {
         private int mPageOfChannelList;
         private String mUrl;
         private String mOauthHeader;
-        private List<Channel> mChannels;
 
         public ChannelBuilder pageNumber(int page) {
             mPageOfChannelList = page;
             return this;
         }
 
-        public List<Channel> build() {
-            mChannels = new ArrayList<>();
+        public void build(final IDataLoadingCallback<List<Channel>> dataLoadingCallback) {
             try {
                 String httpMethod = "GET";
                 mUrl = "http://cloud.rovicorp.com/data/2/2.4/lookup/service/";
@@ -59,6 +57,7 @@ public class TvApi {
                 mOauthHeader = oauth.buildAuthorizationHeader(consumerKey, signature);
 
                 System.out.println("Authorization Header:\n" + mOauthHeader);
+                // TODO: 28.03.2016 Not good
             } catch (InvalidKeyException e) {
                 e.printStackTrace();
             } catch (UnsupportedEncodingException e) {
@@ -93,7 +92,8 @@ public class TvApi {
                 @Override
                 public void onResponse(Call<TvChannels> call, retrofit2.Response<TvChannels> response) {
                     TvChannels tvChannels = response.body();
-                    mChannels.addAll(Arrays.asList(tvChannels.getChannels()));
+                    final List<Channel> loadedChannels = new ArrayList<>();
+                    loadedChannels.addAll(Arrays.asList(tvChannels.getChannels()));
                     Log.e("Activity", call.toString() + "\n" + response.message() + "\n" + response.code());
                     Log.e("Activity", call.request().url().toString());
                     for (int i = 0; i < tvChannels.getChannels().length; i++) {
@@ -112,17 +112,18 @@ public class TvApi {
 //                    Glide.with(ChannelListActivity.this)
 //                            .load(logoUrl)
 //                            .into(mImageView);
+
+                    dataLoadingCallback.onResult(loadedChannels);
                 }
 
                 @Override
                 public void onFailure(Call<TvChannels> call, Throwable t) {
+                    dataLoadingCallback.onFailure(t);
                     Log.e("Error", call.request().url().toString() + "\n" + t.getMessage() + "\n" +
                             t.getStackTrace()[0]);
                     t.printStackTrace();
                 }
             });
-
-            return mChannels;
         }
     }
 }

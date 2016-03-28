@@ -7,13 +7,14 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
-import com.demo.rovi.roviapidemo.model.ApiEndpointInterface;
-import com.demo.rovi.roviapidemo.model.TvSchedule.TvSchedule;
-import com.demo.rovi.roviapidemo.utils.OAuthSignatureGenerator;
 import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.adapter.ChannelListAdapter;
-import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
+import com.demo.rovi.roviapidemo.model.ApiEndpointInterface;
+import com.demo.rovi.roviapidemo.model.IDataLoadingCallback;
+import com.demo.rovi.roviapidemo.model.TvChannels.Channel;
+import com.demo.rovi.roviapidemo.model.TvSchedule.TvSchedule;
+import com.demo.rovi.roviapidemo.utils.OAuthSignatureGenerator;
+import com.demo.rovi.roviapidemo.utils.TvApi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -22,7 +23,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -37,30 +38,47 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ChannelListActivity extends AppCompatActivity {
 
+    private static final String TAG = ChannelListActivity.class.getCanonicalName();
+
     private String mOauthHeader;
     private String mUrl;
 
     private ImageView mImageView;
+
+    private RecyclerView mChannelsListView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.channel_list_activity);
 
-        ChannelListAdapter channelListAdapter = new ChannelListAdapter(this);
-
+        // TODO: 28.03.2016 ButterKnife
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        if (recyclerView != null) {
-            recyclerView.setLayoutManager(linearLayoutManager);
-            recyclerView.setAdapter(channelListAdapter);
-        }
+        mChannelsListView = (RecyclerView) findViewById(R.id.recycler_view);
+        mChannelsListView.setLayoutManager(linearLayoutManager);
+
+        loadAndDisplayChannelsData();
 
         mImageView = (ImageView) findViewById(R.id.item_image);
 
-        getChannelSchedule();
+//        getChannelSchedule();
 
+    }
+
+    private void loadAndDisplayChannelsData() {
+        TvApi.channelBuilder().build(new IDataLoadingCallback<List<Channel>>() {
+            @Override
+            public void onResult(List<Channel> loadedData) {
+                ChannelListAdapter channelListAdapter = new ChannelListAdapter(ChannelListActivity.this, loadedData);
+                mChannelsListView.setAdapter(channelListAdapter);
+            }
+
+            @Override
+            public void onFailure(Throwable ex) {
+                Log.e(TAG, "Error occurred while loading channels data. ", ex);
+            }
+        });
     }
 
     private void getChannelSchedule() {

@@ -11,23 +11,22 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.model.TvChannels.Channel;
-import com.demo.rovi.roviapidemo.utils.TvApi;
 
 import java.util.List;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.ViewHolder> {
 
-    private List<Channel> mChannelList;
-    private Context mContext;
+    private final List<Channel> mChannelList;
+    private final Context mContext;
 
-    public ChannelListAdapter(Context context) {
-        mChannelList = TvApi.channelBuilder().build();
-        mContext = context;
+    public ChannelListAdapter(Context context, List<Channel> mChannelList) {
+        this.mContext = context;
+        this.mChannelList = mChannelList;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.channel_item, parent, false);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.channel_item, parent, false);
         return new ViewHolder(mContext, view);
     }
 
@@ -38,7 +37,10 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
         holder.bind(channelItem);
     }
 
-
+    @Override
+    public void onViewRecycled(ViewHolder holder) {
+        holder.unbind();
+    }
 
     @Override
     public int getItemCount() {
@@ -65,9 +67,15 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 
             Log.e("VHTAG", "URL -> " + logoUrl);
             Glide.with(mContext).load(logoUrl)
-                    .placeholder(R.drawable.logo_3ss_preview)
+//                    .placeholder(R.drawable.logo_3ss_preview)
 //                    .centerCrop()
                     .into(mChannelLogo);
+        }
+
+        public void unbind() {
+            if (mChannelLogo != null) {
+                Glide.clear(mChannelLogo);
+            }
         }
     }
 }
