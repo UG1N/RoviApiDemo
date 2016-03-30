@@ -3,7 +3,6 @@ package com.demo.rovi.roviapidemo.model.TvSchedule;
 import com.demo.rovi.roviapidemo.model.References;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.Calendar;
 import java.util.Date;
 
 public class Airing {

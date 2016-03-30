@@ -16,8 +16,9 @@ import java.util.List;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.ViewHolder> {
 
-    private final List<Channel> mChannelList;
+    private List<Channel> mChannelList;
     private final Context mContext;
+    private ChannelLogoClickListener mChannelLogoClickListener;
 
     public ChannelListAdapter(Context context, List<Channel> mChannelList) {
         this.mContext = context;
@@ -32,7 +33,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Log.e("smth", "smth");
         Channel channelItem = mChannelList.get(position);
         holder.bind(channelItem);
     }
@@ -47,7 +47,12 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
         return mChannelList.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    public void addNewChannels(List<Channel> channelList) {
+        mChannelList.addAll(channelList);
+        notifyDataSetChanged();
+    }
+
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 //        private TextView mChannelTitle;
         private ImageView mChannelLogo;
         private final Context mContext;
@@ -57,6 +62,7 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
             mContext = context;
 //            mChannelTitle = (TextView) itemView.findViewById(R.id.channel_name);
             mChannelLogo = (ImageView) itemView.findViewById(R.id.channel_logo);
+            mChannelLogo.setOnClickListener(this);
         }
 
         void bind(Channel channelItem) {
@@ -67,8 +73,8 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
 
             Log.e("VHTAG", "URL -> " + logoUrl);
             Glide.with(mContext).load(logoUrl)
-//                    .placeholder(R.drawable.logo_3ss_preview)
-//                    .centerCrop()
+                    .placeholder(R.drawable.logo_3ss_preview)
+                    .fitCenter()
                     .into(mChannelLogo);
         }
 
@@ -77,5 +83,18 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
                 Glide.clear(mChannelLogo);
             }
         }
+
+        @Override
+        public void onClick(View v) {
+
+            if (mChannelLogoClickListener != null) {
+                mChannelLogoClickListener.onChannelClick(getAdapterPosition() + 1);
+            }
+        }
     }
+
+    public void setOnChannelClickListener(ChannelLogoClickListener channelLogoClickListener) {
+        mChannelLogoClickListener = channelLogoClickListener;
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.demo.rovi.roviapidemo.model;
+package com.demo.rovi.roviapidemo.model.restapi;
 
 /**
  * @author Alexey Kovalev

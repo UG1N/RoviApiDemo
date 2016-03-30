@@ -1,13 +1,12 @@
 package com.demo.rovi.roviapidemo.model.dao;
 
-import com.demo.rovi.roviapidemo.model.IDataLoadingCallback;
-import com.demo.rovi.roviapidemo.model.TvChannels.Channel;
+import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
 import com.demo.rovi.roviapidemo.model.restapi.IChannelsRestApi;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * @author Alexey Kovalev
@@ -21,23 +20,22 @@ public final class ChannelsDao {
         this.channelsRestApi = channelsRestApi;
     }
 
-    void getChannels(String urlToLoadChannels, final IDataLoadingCallback<Channel> channelsLoadingCallback) {
+    public void getChannels(String urlToLoadChannels, final IDataLoadingCallback<TvChannels> channelsLoadingCallback) {
         channelsRestApi.getChannelsDataFromUrl(urlToLoadChannels).enqueue(
                 new Callback<TvChannels>() {
                     @Override
-                    public void onResponse(Call<TvChannels> call, Response<TvChannels> response) {
-                        if (response.isSuccessful()) {
-//                            channelsLoadingCallback.onResult(response.body());
+                    public void onResponse(Response<TvChannels> response, Retrofit retrofit) {
+                        if (response.isSuccess()) {
+                            channelsLoadingCallback.onResult(response.body());
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<TvChannels> call, Throwable t) {
+                    public void onFailure(Throwable t) {
                         // TODO: 28.03.2016
+                        channelsLoadingCallback.onFailure(t);
                     }
                 }
         );
     }
-
-
 }
