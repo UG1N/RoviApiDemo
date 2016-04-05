@@ -49,9 +49,8 @@ public final class RestApiClientConfiguration {
 
     private OkHttpClient initOkHttpClient(CookieHandler defaultCookieHandler) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        // TODO: // FIXME: 28.03.2016 add timeout
-        okHttpClient.setConnectTimeout(10, TimeUnit.SECONDS);
-        okHttpClient.setReadTimeout(10, TimeUnit.SECONDS);
+        okHttpClient.setConnectTimeout(BackendConstants.CONNECTING_TIMEOUT, TimeUnit.SECONDS);
+        okHttpClient.setReadTimeout(BackendConstants.READ_TIMEOUT, TimeUnit.SECONDS);
         okHttpClient.setCookieHandler(defaultCookieHandler);
         Cache cache = createResponseCache();
         if (cache != null) {
@@ -77,7 +76,7 @@ public final class RestApiClientConfiguration {
     }
 
     private Retrofit initRetrofit() {
-        final Gson gson = new GsonBuilder().create();
+        final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
         return new Retrofit.Builder()
                 .baseUrl(BackendConstants.ROVI_BASE_URL)
                 .client(mOkHttpClient)

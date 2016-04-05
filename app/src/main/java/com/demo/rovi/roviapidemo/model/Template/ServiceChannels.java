@@ -2,9 +2,7 @@ package com.demo.rovi.roviapidemo.model.Template;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
-public class ServiceChannels implements Serializable {
+public class ServiceChannels {
     @SerializedName("screen")
     private String mChannels;
 

@@ -1,5 +1,7 @@
 package com.demo.rovi.roviapidemo.model.dao;
 
+import android.util.Log;
+
 import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
 import com.demo.rovi.roviapidemo.model.restapi.IChannelsRestApi;

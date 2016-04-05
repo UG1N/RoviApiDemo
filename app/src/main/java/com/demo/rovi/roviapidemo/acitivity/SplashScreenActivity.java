@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.damnhandy.uri.template.UriTemplate;
 import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
@@ -17,20 +18,28 @@ import com.demo.rovi.roviapidemo.model.restapi.ITemplateRestApi;
 
 public class SplashScreenActivity extends AppCompatActivity {
 
+    public static final String TAG = "SplashScreenActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
 
+        String templateUrl = UriTemplate.fromTemplate(BackendConstants.URL_TO_LOAD_TEMPLATE_FILE)
+                .set(BackendConstants.STRING_ID, BackendConstants.CONSUMER_KEY)
+                .set(BackendConstants.STRING_CURRENT_VERSION, BackendConstants.CURRENT_TEMPLATE_VERSION)
+                .expand();
+        Log.e(TAG, templateUrl);
+
         TemplateFileDao templateFileDao = new TemplateFileDao(RoviApplication.createRestApiServiceImpl(ITemplateRestApi.class));
-        templateFileDao.getTemplateFile("http://cloud.rovicorp.com/template/v1/" +
-                        "86273bfd5ea822f5c455ddde5c527a3f884523955edeece10b7ae32efcd3963e/2/templates.json",
+        templateFileDao.getTemplateFile(templateUrl,
                 new IDataLoadingCallback<TemplateFile>() {
                     @Override
                     public void onResult(TemplateFile loadedData) {
-                        Log.e("SplashScreenActivity", loadedData.toString());
+                        Log.e(TAG, loadedData.toString());
+                        RoviApplication.getInstance().setTemplateFile(loadedData);
+
                         Intent mainIntent = new Intent(SplashScreenActivity.this, ChannelListActivity.class);
-                        mainIntent.putExtra(BackendConstants.TEMPLATE_FILE, loadedData);
                         SplashScreenActivity.this.startActivity(mainIntent);
                         SplashScreenActivity.this.finish();
                     }
@@ -42,5 +51,4 @@ public class SplashScreenActivity extends AppCompatActivity {
                     }
                 });
     }
-
 }

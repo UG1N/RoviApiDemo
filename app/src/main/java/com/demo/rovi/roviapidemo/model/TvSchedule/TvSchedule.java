@@ -7,9 +7,13 @@ import java.util.Arrays;
 public class TvSchedule {
     @SerializedName("schedule")
     private Schedule[] mScheduleForSingleChannel;
-
-    public Schedule[] getScheduleForSingleChannel() {
+    // Delete ?
+    private Schedule[] getScheduleForSingleChannel() {
         return mScheduleForSingleChannel;
+    }
+
+    public Schedule getScheduleForChannel() {
+        return mScheduleForSingleChannel[0];
     }
 
     @Override

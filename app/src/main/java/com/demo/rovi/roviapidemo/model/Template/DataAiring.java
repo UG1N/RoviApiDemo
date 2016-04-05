@@ -2,20 +2,18 @@ package com.demo.rovi.roviapidemo.model.Template;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
+public class DataAiring {
+    @SerializedName("best")
+    private String mSynopsisBest;
 
-public class DataAiring implements Serializable {
-    @SerializedName("collection")
-    private String mSynopsesColection;
-
-    public String getSynopsesColection() {
-        return mSynopsesColection;
+    public String getSynopsisBest() {
+        return mSynopsisBest;
     }
 
     @Override
     public String toString() {
         return "DataAiring{" +
-                "mSynopsesColection='" + mSynopsesColection + '\'' +
+                "mSynopsisBest='" + mSynopsisBest + '\'' +
                 '}';
     }
 }

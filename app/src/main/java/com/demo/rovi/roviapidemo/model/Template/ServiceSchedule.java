@@ -2,9 +2,7 @@ package com.demo.rovi.roviapidemo.model.Template;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
-public class ServiceSchedule implements Serializable {
+public class ServiceSchedule {
     @SerializedName("single")
     private String mSingleChannelSchedule;
 

@@ -16,8 +16,8 @@ public class TemplateFileDao {
     }
 
     public void getTemplateFile(String urlToLoadTemplateFile, final IDataLoadingCallback<TemplateFile> loadingCallback) {
-         mITemplateRestApi.getTemplateFile(urlToLoadTemplateFile).enqueue(
-                         new Callback<TemplateFile>() {
+        mITemplateRestApi.getTemplateFile(urlToLoadTemplateFile).enqueue(
+                new Callback<TemplateFile>() {
                     @Override
                     public void onResponse(Response<TemplateFile> response, Retrofit retrofit) {
                         if (response.isSuccess()) {

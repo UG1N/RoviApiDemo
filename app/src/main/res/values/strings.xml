@@ -2,4 +2,7 @@
     <string name="app_name">RoviApiDemo</string>
     <string name="title_activity_splash_screen">SplashScreenActivity</string>
     <string name="failed">failed</string>
+    <string name="error_template_file">Template file has to be loaded beforehand.</string>
+    <string name="no_description">No Description</string>
+
 </resources>
