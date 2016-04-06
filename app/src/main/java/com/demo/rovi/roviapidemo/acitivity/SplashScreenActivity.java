@@ -31,37 +31,23 @@ public class SplashScreenActivity extends AppCompatActivity {
                 .expand();
         Log.e(TAG, templateUrl);
 
-        TemplateFileDao templateFileDao2 = new TemplateFileDao(RoviApplication.createRestApiServiceImpl2(ITemplateRestApi.class));
-        templateFileDao2.getTemplateFileRx(templateUrl, new IDataLoadingCallback<TemplateFile>() {
+        TemplateFileDao templateFileDao = new TemplateFileDao(RoviApplication.createRestApiServiceImpl(ITemplateRestApi.class));
+        templateFileDao.getTemplateFileRx(templateUrl, new IDataLoadingCallback<TemplateFile>() {
             @Override
             public void onResult(TemplateFile loadedData) {
                 Log.e(TAG, "onResult: " + loadedData.toString());
+                RoviApplication.getInstance().setTemplateFile(loadedData);
+
+                Intent mainIntent = new Intent(SplashScreenActivity.this, ChannelListActivity.class);
+                SplashScreenActivity.this.startActivity(mainIntent);
+                SplashScreenActivity.this.finish();
             }
 
             @Override
             public void onFailure(Throwable ex) {
-
+                Toast.makeText(SplashScreenActivity.this, R.string.failed, Toast.LENGTH_SHORT).show();
+                SplashScreenActivity.this.finish();
             }
         });
-
-        TemplateFileDao templateFileDao = new TemplateFileDao(RoviApplication.createRestApiServiceImpl(ITemplateRestApi.class));
-        templateFileDao.getTemplateFile(templateUrl,
-                new IDataLoadingCallback<TemplateFile>() {
-                    @Override
-                    public void onResult(TemplateFile loadedData) {
-                        Log.e(TAG, loadedData.toString());
-                        RoviApplication.getInstance().setTemplateFile(loadedData);
-
-                        Intent mainIntent = new Intent(SplashScreenActivity.this, ChannelListActivity.class);
-                        SplashScreenActivity.this.startActivity(mainIntent);
-                        SplashScreenActivity.this.finish();
-                    }
-
-                    @Override
-                    public void onFailure(Throwable ex) {
-                        Toast.makeText(SplashScreenActivity.this, R.string.failed, Toast.LENGTH_SHORT).show();
-                        SplashScreenActivity.this.finish();
-                    }
-                });
     }
 }

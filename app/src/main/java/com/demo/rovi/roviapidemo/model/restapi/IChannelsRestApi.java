@@ -2,9 +2,9 @@ package com.demo.rovi.roviapidemo.model.restapi;
 
 import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
 
-import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Url;
+import rx.Observable;
 
 /**
  * @author Alexey Kovalev
@@ -12,5 +12,5 @@ import retrofit.http.Url;
  */
 public interface IChannelsRestApi {
     @GET
-    Call<TvChannels> getChannelsDataFromUrl(@Url String url);
+    Observable<TvChannels> getChannelsDataFromUrl(@Url String url);
 }

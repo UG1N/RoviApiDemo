@@ -1,14 +1,12 @@
 package com.demo.rovi.roviapidemo.model.dao;
 
-import android.util.Log;
-
-import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
 import com.demo.rovi.roviapidemo.model.restapi.IChannelsRestApi;
+import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * @author Alexey Kovalev
@@ -22,22 +20,26 @@ public final class ChannelsDao {
         this.channelsRestApi = channelsRestApi;
     }
 
+
     public void getChannels(String urlToLoadChannels, final IDataLoadingCallback<TvChannels> channelsLoadingCallback) {
-        channelsRestApi.getChannelsDataFromUrl(urlToLoadChannels).enqueue(
-                new Callback<TvChannels>() {
+        channelsRestApi.getChannelsDataFromUrl(urlToLoadChannels).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .unsubscribeOn(Schedulers.io())
+                .subscribe(new Observer<TvChannels>() {
                     @Override
-                    public void onResponse(Response<TvChannels> response, Retrofit retrofit) {
-                        if (response.isSuccess()) {
-                            channelsLoadingCallback.onResult(response.body());
-                        }
+                    public void onCompleted() {
+
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
-                        // TODO: 28.03.2016
-                        channelsLoadingCallback.onFailure(t);
+                    public void onError(Throwable e) {
+                        channelsLoadingCallback.onFailure(e);
                     }
-                }
-        );
+
+                    @Override
+                    public void onNext(TvChannels tvChannels) {
+                        channelsLoadingCallback.onResult(tvChannels);
+                    }
+                });
     }
 }

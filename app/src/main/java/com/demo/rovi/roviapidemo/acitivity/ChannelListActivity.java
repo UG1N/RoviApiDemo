@@ -1,7 +1,6 @@
 package com.demo.rovi.roviapidemo.acitivity;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -239,24 +238,21 @@ public class ChannelListActivity extends AppCompatActivity {
         mSimpleAiringObjectList.add(arrayPosition, mSimpleAiringObject);
     }
 
-    private void loadDescriptionOfSelectedAir(String urlId) {
-        if (urlId == null) {
-            mAiringDescriptionTextView.setText(R.string.no_description);
-            Log.e(TAG, "url id in if- > " + urlId);
-            return;
-        }
+    private void loadDescriptionOfSelectedAir(final String urlId) {
+        Log.e(TAG, "url id in if- > " + urlId);
 
         mSynopsisDao = new SynopsisDao(RoviApplication.createRestApiServiceImpl(ISynopsesRestApi.class));
         mSynopsisDao.getSynopsis(getUrlForAirSynopsis(urlId), new IDataLoadingCallback<AirSynopsis>() {
             @Override
             public void onResult(AirSynopsis loadedData) {
-                Log.e(TAG, "onResult: AirSynopsis" + loadedData.getAirSynopsis());
+                Log.e(TAG, "onResult: AirSynopsis" + urlId + loadedData.getAirSynopsis());
                 mAiringDescriptionTextView.setText(loadedData.getAirSynopsis().getSynopsis());
             }
 
             @Override
             public void onFailure(Throwable ex) {
-                Log.e(TAG, "loadDescriptionOfSelectedAir onFailure: ", ex);
+                Log.e(TAG, "loadDescriptionOfSelectedAir onFailure: " + urlId, ex);
+                mAiringDescriptionTextView.setText(R.string.no_description);
             }
         });
     }

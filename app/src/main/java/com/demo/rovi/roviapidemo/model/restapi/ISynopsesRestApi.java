@@ -2,12 +2,12 @@ package com.demo.rovi.roviapidemo.model.restapi;
 
 import com.demo.rovi.roviapidemo.model.synopses.AirSynopsis;
 
-import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Url;
+import rx.Observable;
 
 public interface ISynopsesRestApi {
 
     @GET
-    Call<AirSynopsis> getDescription(@Url String url);
+    Observable<AirSynopsis> getDescription(@Url String url);
 }
