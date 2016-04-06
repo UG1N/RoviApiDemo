@@ -54,7 +54,8 @@ public class AiringFragment extends Fragment {
 
         Log.e(TAG, getUrl);
 
-        Glide.with(this).load(getUrl).error(R.drawable.logo_3ss_preview).into(firstText);
+        Glide.with(this).load(getUrl).placeholder(R.drawable.logo_3ss_preview)
+                .error(R.drawable.no_title).into(firstText);
         return view;
     }
 }

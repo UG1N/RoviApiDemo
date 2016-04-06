@@ -239,7 +239,7 @@ public class ChannelListActivity extends AppCompatActivity {
         mSimpleAiringObjectList.add(arrayPosition, mSimpleAiringObject);
     }
 
-    private synchronized void loadDescriptionOfSelectedAir(String urlId) {
+    private void loadDescriptionOfSelectedAir(String urlId) {
         if (urlId == null) {
             mAiringDescriptionTextView.setText(R.string.no_description);
             Log.e(TAG, "url id in if- > " + urlId);

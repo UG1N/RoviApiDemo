@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
+import retrofit.RxJavaCallAdapterFactory;
 
 
 public final class RestApiClientConfiguration {
@@ -34,6 +35,7 @@ public final class RestApiClientConfiguration {
     private final CookieManager mDefaultCookieHandler;
     private final OkHttpClient mOkHttpClient;
     private final Retrofit mRetrofit;
+    private final Retrofit mRetrofit2;
 
 
     public RestApiClientConfiguration(Context context) {
@@ -41,10 +43,15 @@ public final class RestApiClientConfiguration {
         mDefaultCookieHandler = new CookieManager();
         this.mOkHttpClient = initOkHttpClient(mDefaultCookieHandler);
         mRetrofit = initRetrofit();
+        mRetrofit2 = initRetrofit2();
     }
 
     public <T> T createRestApiServiceImpl(Class<T> serviceApiInterface) {
         return mRetrofit.create(serviceApiInterface);
+    }
+
+    public <T> T createRestApiServiceImpl2(Class<T> serviceApiInterface) {
+        return mRetrofit2.create(serviceApiInterface);
     }
 
     private OkHttpClient initOkHttpClient(CookieHandler defaultCookieHandler) {
@@ -81,6 +88,16 @@ public final class RestApiClientConfiguration {
                 .baseUrl(BackendConstants.ROVI_BASE_URL)
                 .client(mOkHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .build();
+    }
+
+    private Retrofit initRetrofit2() {
+        final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").create();
+        return new Retrofit.Builder()
+                .baseUrl(BackendConstants.ROVI_BASE_URL)
+                .client(mOkHttpClient)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .build();
     }
 

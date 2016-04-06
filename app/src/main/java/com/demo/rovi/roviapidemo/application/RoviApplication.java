@@ -21,6 +21,10 @@ public class RoviApplication extends Application {
         return instance.mRestApiClientConfiguration.createRestApiServiceImpl(serviceApiInterface);
     }
 
+    public static <T> T createRestApiServiceImpl2(Class<T> serviceApiInterface) {
+        return instance.mRestApiClientConfiguration.createRestApiServiceImpl2(serviceApiInterface);
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();

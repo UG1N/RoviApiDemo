@@ -31,6 +31,19 @@ public class SplashScreenActivity extends AppCompatActivity {
                 .expand();
         Log.e(TAG, templateUrl);
 
+        TemplateFileDao templateFileDao2 = new TemplateFileDao(RoviApplication.createRestApiServiceImpl2(ITemplateRestApi.class));
+        templateFileDao2.getTemplateFileRx(templateUrl, new IDataLoadingCallback<TemplateFile>() {
+            @Override
+            public void onResult(TemplateFile loadedData) {
+                Log.e(TAG, "onResult: " + loadedData.toString());
+            }
+
+            @Override
+            public void onFailure(Throwable ex) {
+
+            }
+        });
+
         TemplateFileDao templateFileDao = new TemplateFileDao(RoviApplication.createRestApiServiceImpl(ITemplateRestApi.class));
         templateFileDao.getTemplateFile(templateUrl,
                 new IDataLoadingCallback<TemplateFile>() {

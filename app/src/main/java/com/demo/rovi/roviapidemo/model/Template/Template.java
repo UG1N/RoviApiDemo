@@ -42,10 +42,10 @@ public class Template {
     @Override
     public String toString() {
         return "Template{" +
-                "mDataAiring=" + mDataAiring +
-                ", mServiceChannels=" + mServiceChannels +
-                ", mServiceSchedule=" + mServiceSchedule +
-                ", mAirImage=" + mAirImage +
+                "mDataAiring=" + mDataAiring + '\n' +
+                ", mServiceChannels=" + mServiceChannels + '\n' +
+                ", mServiceSchedule=" + mServiceSchedule + '\n' +
+                ", mAirImage=" + mAirImage + '\n' +
                 ", mMediaLogo='" + mMediaLogo + '\'' +
                 '}';
     }
