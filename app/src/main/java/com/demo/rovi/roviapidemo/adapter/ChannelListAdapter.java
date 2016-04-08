@@ -14,6 +14,7 @@ import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.channels.Channel;
 import com.demo.rovi.roviapidemo.model.channels.WindowChannel;
+import com.demo.rovi.roviapidemo.widget.ChannelsHorizontalListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,31 +24,24 @@ import butterknife.ButterKnife;
 
 public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.ViewHolder> {
 
-    public interface ChannelLogoClickListener {
-        // TODO: 31.03.2016 pass entity instead of index
-        void onChannelClick(int i);
-    }
-
     private final List<Channel> mChannelList;
-    private final Context mContext;
-    private final ChannelLogoClickListener mChannelLogoClickListener;
+    private final ChannelsHorizontalListView.ChannelItemSelectionListener mChannelItemSelectionListener;
 
-    public ChannelListAdapter(Context context, List<Channel> channelList, ChannelLogoClickListener channelLogoClickListener) {
-        mContext = context;
+    public ChannelListAdapter(List<Channel> channelList, ChannelsHorizontalListView.ChannelItemSelectionListener channelItemSelectionListener) {
         mChannelList = new ArrayList<>(channelList);
-        mChannelLogoClickListener = channelLogoClickListener;
+        mChannelItemSelectionListener = channelItemSelectionListener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.channel_item, parent, false);
-        return new ViewHolder(mContext, view);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.channel_item, parent, false);
+        return new ViewHolder(parent.getContext(), view);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Channel channelItem = getItemByPosition(position);
-        holder.bind(channelItem, mChannelLogoClickListener);
+        holder.bind(channelItem, mChannelItemSelectionListener);
     }
 
     @Override
@@ -81,11 +75,11 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
             ButterKnife.bind(this, itemView);
         }
 
-        void bind(Channel channelItem, final ChannelLogoClickListener channelLogoClickListener) {
+        void bind(Channel channelItem, final ChannelsHorizontalListView.ChannelItemSelectionListener channelItemSelectionListener) {
             mChannelLogo.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    channelLogoClickListener.onChannelClick(getAdapterPosition() + 1);
+                    channelItemSelectionListener.onChannelClick(getAdapterPosition() + 1);
                 }
             });
 
