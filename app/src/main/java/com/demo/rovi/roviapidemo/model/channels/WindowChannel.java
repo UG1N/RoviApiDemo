@@ -1,4 +1,4 @@
-package com.demo.rovi.roviapidemo.model.TvChannels;
+package com.demo.rovi.roviapidemo.model.channels;
 
 import com.google.gson.annotations.SerializedName;
 

@@ -1,6 +1,6 @@
 package com.demo.rovi.roviapidemo.model.restapi;
 
-import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
+import com.demo.rovi.roviapidemo.model.channels.TvChannels;
 
 import retrofit.http.GET;
 import retrofit.http.Url;

@@ -1,6 +1,6 @@
 package com.demo.rovi.roviapidemo.model.dao;
 
-import com.demo.rovi.roviapidemo.model.TvSchedule.TvSchedule;
+import com.demo.rovi.roviapidemo.model.schedule.TvSchedule;
 import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.restapi.IScheduleRestApi;
 

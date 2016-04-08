@@ -1,6 +1,6 @@
 package com.demo.rovi.roviapidemo.model.dao;
 
-import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
+import com.demo.rovi.roviapidemo.model.channels.TvChannels;
 import com.demo.rovi.roviapidemo.model.restapi.IChannelsRestApi;
 import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 

@@ -1,6 +1,6 @@
 package com.demo.rovi.roviapidemo.model.restapi;
 
-import com.demo.rovi.roviapidemo.model.TvSchedule.TvSchedule;
+import com.demo.rovi.roviapidemo.model.schedule.TvSchedule;
 
 import retrofit.http.GET;
 import retrofit.http.Url;

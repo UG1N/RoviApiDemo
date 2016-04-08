@@ -1,4 +1,4 @@
-package com.demo.rovi.roviapidemo.acitivity;
+package com.demo.rovi.roviapidemo.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,10 +10,10 @@ import com.damnhandy.uri.template.UriTemplate;
 import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
-import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 import com.demo.rovi.roviapidemo.model.dao.TemplateFileDao;
 import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.restapi.ITemplateRestApi;
+import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 
 
 public class SplashScreenActivity extends AppCompatActivity {

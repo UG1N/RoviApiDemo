@@ -1,4 +1,4 @@
-package com.demo.rovi.roviapidemo.acitivity;
+package com.demo.rovi.roviapidemo.activity;
 
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
@@ -15,10 +15,10 @@ import com.demo.rovi.roviapidemo.adapter.ChannelListAdapter;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
 import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
-import com.demo.rovi.roviapidemo.model.TvChannels.Channel;
-import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
-import com.demo.rovi.roviapidemo.model.TvSchedule.Schedule;
-import com.demo.rovi.roviapidemo.model.TvSchedule.TvSchedule;
+import com.demo.rovi.roviapidemo.model.channels.Channel;
+import com.demo.rovi.roviapidemo.model.channels.TvChannels;
+import com.demo.rovi.roviapidemo.model.schedule.Schedule;
+import com.demo.rovi.roviapidemo.model.schedule.TvSchedule;
 import com.demo.rovi.roviapidemo.model.dao.ChannelsDao;
 import com.demo.rovi.roviapidemo.model.dao.ScheduleDao;
 import com.demo.rovi.roviapidemo.model.dao.SynopsisDao;

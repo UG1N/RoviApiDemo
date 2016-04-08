@@ -12,13 +12,10 @@ import com.bumptech.glide.Glide;
 import com.damnhandy.uri.template.UriTemplate;
 import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
-import com.demo.rovi.roviapidemo.model.TvChannels.Channel;
-import com.demo.rovi.roviapidemo.model.TvChannels.WindowChannel;
+import com.demo.rovi.roviapidemo.model.channels.Channel;
+import com.demo.rovi.roviapidemo.model.channels.WindowChannel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;

@@ -1,4 +1,4 @@
-package com.demo.rovi.roviapidemo.model.TvSchedule;
+package com.demo.rovi.roviapidemo.model.schedule;
 
 import com.demo.rovi.roviapidemo.model.References;
 import com.google.gson.annotations.SerializedName;

@@ -4,7 +4,7 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              tools:context=".acitivity.ChannelListActivity">
+              tools:context=".activity.ChannelListActivity">
 
     <android.support.v4.view.ViewPager
         android:id="@+id/airing_page"
