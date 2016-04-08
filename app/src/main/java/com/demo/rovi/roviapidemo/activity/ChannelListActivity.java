@@ -14,11 +14,8 @@ import com.demo.rovi.roviapidemo.adapter.AiringPageAdapter;
 import com.demo.rovi.roviapidemo.adapter.ChannelListAdapter;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
-import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 import com.demo.rovi.roviapidemo.model.channels.Channel;
 import com.demo.rovi.roviapidemo.model.channels.TvChannels;
-import com.demo.rovi.roviapidemo.model.schedule.Schedule;
-import com.demo.rovi.roviapidemo.model.schedule.TvSchedule;
 import com.demo.rovi.roviapidemo.model.dao.ChannelsDao;
 import com.demo.rovi.roviapidemo.model.dao.ScheduleDao;
 import com.demo.rovi.roviapidemo.model.dao.SynopsisDao;
@@ -27,7 +24,10 @@ import com.demo.rovi.roviapidemo.model.restapi.IChannelsRestApi;
 import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.restapi.IScheduleRestApi;
 import com.demo.rovi.roviapidemo.model.restapi.ISynopsesRestApi;
+import com.demo.rovi.roviapidemo.model.schedule.Schedule;
+import com.demo.rovi.roviapidemo.model.schedule.TvSchedule;
 import com.demo.rovi.roviapidemo.model.synopses.AirSynopsis;
+import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +51,6 @@ public class ChannelListActivity extends AppCompatActivity {
     private SynopsisDao mSynopsisDao;
     private TvChannels mTvChannels;
     private List<SimpleAiringObject> mSimpleAiringObjectList;
-    private SimpleAiringObject mSimpleAiringObject;
 
     private ChannelListAdapter mChannelListAdapter;
     private AiringPageAdapter mAiringPageAdapter;
@@ -84,7 +83,6 @@ public class ChannelListActivity extends AppCompatActivity {
 
         mTemplateFile = RoviApplication.getInstance().getTemplateFile();
         mSimpleAiringObjectList = new ArrayList<>();
-        mSimpleAiringObject = new SimpleAiringObject();
 
         initDao();
         initChannelsList();

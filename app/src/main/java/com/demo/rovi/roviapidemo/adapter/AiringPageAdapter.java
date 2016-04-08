@@ -81,7 +81,7 @@ public class AiringPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return Broadcast.values()[position].value;
+        return Broadcast.values()[position].value.toUpperCase();
     }
 
     public void updateAirPage(List<SimpleAiringObject> airList) {
