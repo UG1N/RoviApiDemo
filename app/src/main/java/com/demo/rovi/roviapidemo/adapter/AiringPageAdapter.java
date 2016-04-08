@@ -26,7 +26,6 @@ public class AiringPageAdapter extends FragmentStatePagerAdapter {
         return mSimpleAiringObjectList.get(position).getSynopsisId();
     }
 
-    //TODO: replace ENUM
     enum Broadcast {
 
         PREVIOUS("Previous Air"),
@@ -50,7 +49,6 @@ public class AiringPageAdapter extends FragmentStatePagerAdapter {
     public void setPrimaryItem(ViewGroup container, int position, Object object) {
         super.setPrimaryItem(container, position, object);
     }
-
 
     @Override
     public Fragment getItem(int position) {

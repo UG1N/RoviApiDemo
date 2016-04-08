@@ -79,7 +79,7 @@ public class ChannelListActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             currentPage = 1;
         }
-        // TODO: 28.03.2016 ButterKnife
+
         ButterKnife.bind(this);
 
         mTemplateFile = RoviApplication.getInstance().getTemplateFile();
@@ -208,27 +208,17 @@ public class ChannelListActivity extends AppCompatActivity {
     }
 
     private void getAirFromSchedule(Schedule schedule, int numberOfAir) {
-        String imageId = null;
+        String imageId;
         if (schedule.getAirings()[numberOfAir].getMediaImage() != null) {
             imageId = (String.valueOf(schedule.getAirings()[numberOfAir]
                     .getMediaImage().getMediaImageReferences().getId()));
-//            mSimpleAiringObject.setImageIconId(String.valueOf(schedule.getAirings()[numberOfAir]
-//                    .getMediaImage().getMediaImageReferences().getId()));
-
         } else {
             imageId = (String.valueOf(-1));
-//            mSimpleAiringObject.setImageIconId(String.valueOf(-1));
         }
-
         String synopsisId = String.valueOf(schedule.getAirings()[numberOfAir]
                 .getAiringReferences().getId());
-//        mSimpleAiringObject.setSynopsisId(String.valueOf(schedule.getAirings()[numberOfAir]
-//                .getAiringReferences().getId()));
-//
         String title = schedule.getAirings()[numberOfAir].getAiringTitle();
-//        mSimpleAiringObject.setTitle(schedule.getAirings()[numberOfAir].getAiringTitle());
-//
-//        mSimpleAiringObjectList.add(mSimpleAiringObject);
+
         mSimpleAiringObjectList.add(new SimpleAiringObject(synopsisId, imageId, title));
     }
 
@@ -259,7 +249,7 @@ public class ChannelListActivity extends AppCompatActivity {
      * @return string url
      */
     private String getUrlForAirSynopsis(String airId) {
-        String urlForSynopsis = UriTemplate
+        return UriTemplate
                 .fromTemplate(mTemplateFile.getTemplate().getDataAiring().getSynopsisBest())
                 .set("id", airId)
                 .set("length", "long")
@@ -270,7 +260,6 @@ public class ChannelListActivity extends AppCompatActivity {
                 .set("in2", "en-" + "%2A")
                 .set("in3", "%2A")
                 .expand();
-        return urlForSynopsis;
     }
 
     private void initChannelsList() {
@@ -297,7 +286,6 @@ public class ChannelListActivity extends AppCompatActivity {
     private void triggerLoadAdditionalChannelItems(int lastCompletelyVisibleItemPosition) {
         if (lastlyRequestedLoadingForChannelPosition != lastCompletelyVisibleItemPosition) {
             Log.e(TAG, "triggerLoadAdditionalChannelItems");
-            // TODO: 31.03.2016 do loading
             lastlyRequestedLoadingForChannelPosition = lastCompletelyVisibleItemPosition;
 
             String getUrl = UriTemplate
@@ -327,7 +315,6 @@ public class ChannelListActivity extends AppCompatActivity {
         }
     }
 
-    // TODO: 05.04.2016
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
