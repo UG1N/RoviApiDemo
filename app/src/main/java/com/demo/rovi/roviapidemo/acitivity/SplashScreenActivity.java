@@ -10,7 +10,7 @@ import com.damnhandy.uri.template.UriTemplate;
 import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
-import com.demo.rovi.roviapidemo.model.Template.TemplateFile;
+import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 import com.demo.rovi.roviapidemo.model.dao.TemplateFileDao;
 import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.restapi.ITemplateRestApi;

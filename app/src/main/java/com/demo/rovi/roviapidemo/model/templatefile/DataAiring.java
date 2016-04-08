@@ -1,4 +1,4 @@
-package com.demo.rovi.roviapidemo.model.Template;
+package com.demo.rovi.roviapidemo.model.templatefile;
 
 import com.google.gson.annotations.SerializedName;
 

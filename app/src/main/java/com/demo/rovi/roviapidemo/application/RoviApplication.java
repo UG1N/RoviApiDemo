@@ -3,7 +3,7 @@ package com.demo.rovi.roviapidemo.application;
 import android.app.Application;
 
 import com.demo.rovi.roviapidemo.R;
-import com.demo.rovi.roviapidemo.model.Template.TemplateFile;
+import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 import com.demo.rovi.roviapidemo.model.dao.auth.RestApiClientConfiguration;
 
 public class RoviApplication extends Application {

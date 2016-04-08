@@ -1,6 +1,6 @@
 package com.demo.rovi.roviapidemo.model.dao;
 
-import com.demo.rovi.roviapidemo.model.Template.TemplateFile;
+import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 import com.demo.rovi.roviapidemo.model.restapi.ITemplateRestApi;
 

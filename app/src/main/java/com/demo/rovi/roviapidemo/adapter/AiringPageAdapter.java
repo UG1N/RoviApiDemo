@@ -4,6 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
+import android.util.Log;
 import android.view.ViewGroup;
 
 import com.demo.rovi.roviapidemo.frragment.AiringFragment;
@@ -15,12 +16,14 @@ import java.util.List;
 public class AiringPageAdapter extends FragmentStatePagerAdapter {
 
     public static final String TAG = "AiringPageAdapter";
-    private final int mFragmentCount = 3;
-    private String[] mAiringTitle;
     private List<SimpleAiringObject> mSimpleAiringObjectList;
 
     public CharSequence getTitleForCurrentAir(int position) {
-        return mAiringTitle[position];
+        return mSimpleAiringObjectList.get(position).getTitle();
+    }
+
+    public String getSynopsisId(int position) {
+        return mSimpleAiringObjectList.get(position).getSynopsisId();
     }
 
     //TODO: replace ENUM
@@ -40,7 +43,6 @@ public class AiringPageAdapter extends FragmentStatePagerAdapter {
 
     public AiringPageAdapter(FragmentManager fm) {
         super(fm);
-        mAiringTitle = new String[mFragmentCount];
         mSimpleAiringObjectList = new ArrayList<>();
     }
 
@@ -52,20 +54,25 @@ public class AiringPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
+        if (mSimpleAiringObjectList == null) {
+            //it's never gets here
+            Log.e(TAG, "getItem: " + "yoohoo, hello null");
+            return null;
+        }
         switch (position) {
             case 0:
-                return AiringFragment.newInstance(mAiringTitle[position]);
+                return AiringFragment.newInstance(mSimpleAiringObjectList.get(position).getImageIconId());
             case 1:
-                return AiringFragment.newInstance(mAiringTitle[position]);
+                return AiringFragment.newInstance(mSimpleAiringObjectList.get(position).getImageIconId());
             case 2:
-                return AiringFragment.newInstance(mAiringTitle[position]);
+                return AiringFragment.newInstance(mSimpleAiringObjectList.get(position).getImageIconId());
         }
         return null;
     }
 
     @Override
     public int getCount() {
-        return mFragmentCount;
+        return mSimpleAiringObjectList.size();
     }
 
     //    this updates the adapter
@@ -79,19 +86,8 @@ public class AiringPageAdapter extends FragmentStatePagerAdapter {
         return Broadcast.values()[position].value;
     }
 
-    public void updateAirPage(String[] airIds) {
-        for (int i = 0; i < airIds.length; i++) {
-            mAiringTitle[i] = airIds[i];
-        }
-        notifyDataSetChanged();
-    }
-
-    public void updateAirPage2(List<SimpleAiringObject> airList) {
+    public void updateAirPage(List<SimpleAiringObject> airList) {
         mSimpleAiringObjectList = airList;
         notifyDataSetChanged();
-    }
-
-    public SimpleAiringObject callFromActivity(int position) {
-        return mSimpleAiringObjectList.get(position);
     }
 }

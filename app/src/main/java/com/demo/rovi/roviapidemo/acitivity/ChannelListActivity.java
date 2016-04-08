@@ -14,7 +14,7 @@ import com.demo.rovi.roviapidemo.adapter.AiringPageAdapter;
 import com.demo.rovi.roviapidemo.adapter.ChannelListAdapter;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
-import com.demo.rovi.roviapidemo.model.Template.TemplateFile;
+import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 import com.demo.rovi.roviapidemo.model.TvChannels.Channel;
 import com.demo.rovi.roviapidemo.model.TvChannels.TvChannels;
 import com.demo.rovi.roviapidemo.model.TvSchedule.Schedule;
@@ -50,15 +50,14 @@ public class ChannelListActivity extends AppCompatActivity {
     private ScheduleDao mScheduleDao;
     private SynopsisDao mSynopsisDao;
     private TvChannels mTvChannels;
+    private List<SimpleAiringObject> mSimpleAiringObjectList;
+    private SimpleAiringObject mSimpleAiringObject;
+
     private ChannelListAdapter mChannelListAdapter;
+    private AiringPageAdapter mAiringPageAdapter;
 
     private int lastlyRequestedLoadingForChannelPosition;
-    private String[] mAirTitles = new String[PAGE_COUNT];
-    private String[] mBeforeNowAfterAirId = new String[PAGE_COUNT];
-    private String[] mAirsDescription = new String[PAGE_COUNT];
-    private List<SimpleAiringObject> mSimpleAiringObjectList;
-
-    private AiringPageAdapter mAiringPageAdapter;
+    private int currentPage;
 
     @Bind(R.id.recycler_view)
     RecyclerView mChannelsListView;
@@ -71,8 +70,6 @@ public class ChannelListActivity extends AppCompatActivity {
 
     @Bind(R.id.airing_description)
     TextView mAiringDescriptionTextView;
-    private SimpleAiringObject mSimpleAiringObject;
-    private int currentPage;
 
 
     @Override
@@ -102,9 +99,8 @@ public class ChannelListActivity extends AppCompatActivity {
             @Override
             public void onPageSelected(int position) {
                 Log.e("PageAdapter", "onCreate: ");
-                if (mAirsDescription[position] != null) {
+                if (mSimpleAiringObjectList.get(position) != null) {
                     bindView(position);
-                    Log.e(TAG, position + " " + mAirsDescription[position]);
                 }
             }
 
@@ -116,8 +112,8 @@ public class ChannelListActivity extends AppCompatActivity {
     }
 
     private void bindView(int position) {
-        mAiringTitleTextView.setText(mAirTitles[position]);
-        loadDescriptionOfSelectedAir(mAirsDescription[position]);
+        mAiringTitleTextView.setText(mAiringPageAdapter.getTitleForCurrentAir(position));
+        loadDescriptionOfSelectedAir(mAiringPageAdapter.getSynopsisId(position));
     }
 
     private void initDao() {
@@ -131,8 +127,7 @@ public class ChannelListActivity extends AppCompatActivity {
         mChannelsDao.getChannels(getUrl, new IDataLoadingCallback<TvChannels>() {
             @Override
             public void onResult(TvChannels loadedData) {
-                for (Channel ch :
-                        loadedData.getChannels()) {
+                for (Channel ch : loadedData.getChannels()) {
                     Log.e("DAO ->", ch.toString());
                 }
                 mTvChannels = loadedData;
@@ -142,7 +137,6 @@ public class ChannelListActivity extends AppCompatActivity {
                             @Override
                             public void onChannelClick(int position) {
                                 currentPage = position;
-                                Log.e(TAG, "onChannelClick: " + position);
                                 loadScheduleDataForChannel(position);
                             }
                         });
@@ -182,6 +176,7 @@ public class ChannelListActivity extends AppCompatActivity {
     }
 
     private void updateAirPageAdapter(Schedule airSchedule) {
+        mSimpleAiringObjectList.clear();
         int currentAirFromSchedule = 0;
         long currentTimeInMs = System.currentTimeMillis();
         for (int i = 0; i < airSchedule.getAirings().length; i++) {
@@ -194,48 +189,47 @@ public class ChannelListActivity extends AppCompatActivity {
 
         for (int i = 0; i < PAGE_COUNT; i++) {
             if (airSchedule.getAirings().length == 1 && currentAirFromSchedule == 0) {
-                getAirFromSchedule(i, airSchedule, currentAirFromSchedule);
+                getAirFromSchedule(airSchedule, currentAirFromSchedule);
             } else if (currentAirFromSchedule == 0 && i <= 1) {
-                getAirFromSchedule(i, airSchedule, currentAirFromSchedule);
+                getAirFromSchedule(airSchedule, currentAirFromSchedule);
             } else if (currentAirFromSchedule == 0) {
-                getAirFromSchedule(i, airSchedule, currentAirFromSchedule + 1);
+                getAirFromSchedule(airSchedule, currentAirFromSchedule + 1);
             } else if (airSchedule.getAirings().length == currentAirFromSchedule + 1 && i > 1) {
-                getAirFromSchedule(i, airSchedule, currentAirFromSchedule);
+                getAirFromSchedule(airSchedule, currentAirFromSchedule);
             } else {
-                getAirFromSchedule(i, airSchedule, currentAirFromSchedule + i - 1);
+                getAirFromSchedule(airSchedule, currentAirFromSchedule + i - 1);
             }
         }
 
-        mAiringPageAdapter.updateAirPage(mBeforeNowAfterAirId);
+        mAiringPageAdapter.updateAirPage(mSimpleAiringObjectList);
+
         mViewPager.setCurrentItem(1);
         bindView(1);
-
-        mAiringPageAdapter.updateAirPage2(mSimpleAiringObjectList);
     }
 
-    private void getAirFromSchedule(int arrayPosition, Schedule schedule, int numberOfAir) {
+    private void getAirFromSchedule(Schedule schedule, int numberOfAir) {
+        String imageId = null;
         if (schedule.getAirings()[numberOfAir].getMediaImage() != null) {
-            mBeforeNowAfterAirId[arrayPosition] = String.valueOf(schedule.getAirings()[numberOfAir]
-                    .getMediaImage().getMediaImageReferences().getId());
-
-            mSimpleAiringObject.setImageIconId(String.valueOf(schedule.getAirings()[numberOfAir]
+            imageId = (String.valueOf(schedule.getAirings()[numberOfAir]
                     .getMediaImage().getMediaImageReferences().getId()));
+//            mSimpleAiringObject.setImageIconId(String.valueOf(schedule.getAirings()[numberOfAir]
+//                    .getMediaImage().getMediaImageReferences().getId()));
 
         } else {
-            mBeforeNowAfterAirId[arrayPosition] = String.valueOf(-1);
-
-            mSimpleAiringObject.setImageIconId(String.valueOf(-1));
+            imageId = (String.valueOf(-1));
+//            mSimpleAiringObject.setImageIconId(String.valueOf(-1));
         }
-        mAirTitles[arrayPosition] = schedule.getAirings()[numberOfAir].getAiringTitle();
-        mAirsDescription[arrayPosition] = String.valueOf(schedule.getAirings()[numberOfAir]
+
+        String synopsisId = String.valueOf(schedule.getAirings()[numberOfAir]
                 .getAiringReferences().getId());
-
-        mSimpleAiringObject.setSynopsisId(String.valueOf(schedule.getAirings()[numberOfAir]
-                .getAiringReferences().getId()));
-
-        mSimpleAiringObject.setTitle(schedule.getAirings()[numberOfAir].getAiringTitle());
-
-        mSimpleAiringObjectList.add(arrayPosition, mSimpleAiringObject);
+//        mSimpleAiringObject.setSynopsisId(String.valueOf(schedule.getAirings()[numberOfAir]
+//                .getAiringReferences().getId()));
+//
+        String title = schedule.getAirings()[numberOfAir].getAiringTitle();
+//        mSimpleAiringObject.setTitle(schedule.getAirings()[numberOfAir].getAiringTitle());
+//
+//        mSimpleAiringObjectList.add(mSimpleAiringObject);
+        mSimpleAiringObjectList.add(new SimpleAiringObject(synopsisId, imageId, title));
     }
 
     private void loadDescriptionOfSelectedAir(final String urlId) {
