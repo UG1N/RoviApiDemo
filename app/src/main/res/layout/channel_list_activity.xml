@@ -6,7 +6,7 @@
               android:orientation="vertical"
               tools:context=".activity.ChannelListActivity">
 
-    <android.support.v4.view.ViewPager
+    <com.demo.rovi.roviapidemo.widget.AirViewPager
         android:id="@+id/airing_page"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -15,9 +15,9 @@
         <android.support.v4.view.PagerTabStrip
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#3300ff00">
-        </android.support.v4.view.PagerTabStrip>
-    </android.support.v4.view.ViewPager>
+            android:background="#3300ff00" />
+
+    </com.demo.rovi.roviapidemo.widget.AirViewPager>
 
     <com.demo.rovi.roviapidemo.widget.ChannelsHorizontalListView
         android:id="@+id/recycler_view"

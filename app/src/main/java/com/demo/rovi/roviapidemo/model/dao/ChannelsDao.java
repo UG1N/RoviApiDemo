@@ -2,12 +2,8 @@ package com.demo.rovi.roviapidemo.model.dao;
 
 import com.demo.rovi.roviapidemo.model.channels.TvChannels;
 import com.demo.rovi.roviapidemo.model.restapi.IChannelsRestApi;
-import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
 
 import rx.Observable;
-import rx.Observer;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * @author Alexey Kovalev

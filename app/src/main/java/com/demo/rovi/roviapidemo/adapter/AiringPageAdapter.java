@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.ViewGroup;
 
 import com.demo.rovi.roviapidemo.frragment.AiringFragment;
@@ -52,11 +51,6 @@ public class AiringPageAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        if (mSimpleAiringObjectList == null) {
-            //it's never gets here
-            Log.e(TAG, "getItem: " + "yoohoo, hello null");
-            return null;
-        }
         switch (position) {
             case 0:
                 return AiringFragment.newInstance(mSimpleAiringObjectList.get(position).getImageIconId());

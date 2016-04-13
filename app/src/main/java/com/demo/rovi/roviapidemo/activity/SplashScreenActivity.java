@@ -11,9 +11,12 @@ import com.demo.rovi.roviapidemo.R;
 import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
 import com.demo.rovi.roviapidemo.model.dao.TemplateFileDao;
-import com.demo.rovi.roviapidemo.model.restapi.IDataLoadingCallback;
+import com.demo.rovi.roviapidemo.model.internal.AbstractRxSubscriber;
 import com.demo.rovi.roviapidemo.model.restapi.ITemplateRestApi;
 import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
+
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 
 public class SplashScreenActivity extends AppCompatActivity {
@@ -32,22 +35,24 @@ public class SplashScreenActivity extends AppCompatActivity {
         Log.e(TAG, templateUrl);
 
         TemplateFileDao templateFileDao = new TemplateFileDao(RoviApplication.createRestApiServiceImpl(ITemplateRestApi.class));
-        templateFileDao.getTemplateFileRx(templateUrl, new IDataLoadingCallback<TemplateFile>() {
-            @Override
-            public void onResult(TemplateFile loadedData) {
-                Log.e(TAG, "onResult: " + loadedData.toString());
-                RoviApplication.getInstance().setTemplateFile(loadedData);
+        templateFileDao.getTemplateFileRx(templateUrl)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new AbstractRxSubscriber<TemplateFile>() {
+                    @Override
+                    public void onNext(TemplateFile templateFile) {
+                        RoviApplication.getInstance().setTemplateFile(templateFile);
 
-                Intent mainIntent = new Intent(SplashScreenActivity.this, ChannelListActivity.class);
-                SplashScreenActivity.this.startActivity(mainIntent);
-                SplashScreenActivity.this.finish();
-            }
+                        Intent mainActivity = new Intent(SplashScreenActivity.this, ChannelListActivity.class);
+                        SplashScreenActivity.this.startActivity(mainActivity);
+                        SplashScreenActivity.this.finish();
+                    }
 
-            @Override
-            public void onFailure(Throwable ex) {
-                Toast.makeText(SplashScreenActivity.this, R.string.failed, Toast.LENGTH_SHORT).show();
-                SplashScreenActivity.this.finish();
-            }
-        });
+                    @Override
+                    public void onError(Throwable e) {
+                        Toast.makeText(SplashScreenActivity.this, R.string.failed, Toast.LENGTH_SHORT).show();
+                        SplashScreenActivity.this.finish();
+                    }
+                });
     }
 }

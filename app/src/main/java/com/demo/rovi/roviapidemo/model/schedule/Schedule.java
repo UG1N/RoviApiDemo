@@ -3,19 +3,20 @@ package com.demo.rovi.roviapidemo.model.schedule;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class Schedule {
     @SerializedName("airings")
-    private Airing[] mAirings;
+    private List<Airing> mAirings;
 
-    public Airing[] getAirings() {
+    public List<Airing> getAirings() {
         return mAirings;
     }
 
     @Override
     public String toString() {
         return "Schedule{" +
-                "mAirings=" + Arrays.toString(mAirings) +
+                "mAirings=" + mAirings +
                 '}';
     }
 }

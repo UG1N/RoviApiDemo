@@ -94,10 +94,6 @@ public class ChannelListAdapter extends RecyclerView.Adapter<ChannelListAdapter.
                         .set("style", "small")
                         .set("id", windowChannel.getDataSources().getLogo().getLogoReferences().getId())
                         .expand();
-//                 TODO: 04.04.2016 need to remove + add constants
-//                "http://cloud.rovicorp.com/media/v1/logo/small/" +
-//                        windowChannel.getDataSources().getLogo().getLogoReferences().getId() +
-//                        ".png";
             }
             Log.e("VHTAG", "URL -> " + logoUrl);
             Glide.with(mContext).load(logoUrl)
