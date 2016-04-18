@@ -14,6 +14,6 @@ public class WindowChannel {
     public String toString() {
         return "WindowChannel{" +
                 "mDataSources=" + mDataSources +
-                '}';
+                '}' + '\n';
     }
 }

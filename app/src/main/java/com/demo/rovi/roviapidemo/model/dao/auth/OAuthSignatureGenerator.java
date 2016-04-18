@@ -1,4 +1,4 @@
-package com.demo.rovi.roviapidemo.utils;
+package com.demo.rovi.roviapidemo.model.dao.auth;
 
 import org.apache.commons.codec.binary.Base64;
 
@@ -248,30 +248,4 @@ public class OAuthSignatureGenerator {
     public void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
-
-//    public static void main(String[] args) {
-//        try {
-//            String httpMethod = "GET",
-//                    url = "http://sample.url.com/query?samplequery=sample value",
-//                    consumerKey = "key", consumerSecret = "secret";
-//
-//            OAuthSignatureGenerator oauth = new OAuthSignatureGenerator();
-//            // overriding nonce and timestamp
-//            oauth.setTimestamp("1458478319");
-//            oauth.setNonce("78834590");
-//
-//            String signature =
-//                    oauth.generateSignature(httpMethod, url, consumerKey, consumerSecret);
-//            String oauthHeader =
-//                    oauth.buildAuthorizationHeader(consumerKey, signature);
-//
-//            System.out.println("Authorization Header:\n" + oauthHeader);
-//        } catch (InvalidKeyException e) {
-//            e.printStackTrace();
-//        } catch (UnsupportedEncodingException e) {
-//            e.printStackTrace();
-//        } catch (NoSuchAlgorithmException e) {
-//            e.printStackTrace();
-//        }
-//    }
 }

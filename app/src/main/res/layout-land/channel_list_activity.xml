@@ -10,7 +10,7 @@
         android:id="@+id/airing_page"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="3">
+        android:layout_weight="5">
 
         <android.support.v4.view.PagerTabStrip
             android:layout_width="match_parent"
@@ -26,30 +26,18 @@
         android:layout_weight="1"
         android:scrollbars="horizontal"/>
 
-    <ScrollView
+    <TextView
+        android:id="@+id/airing_title"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/airing_title_size"
+        android:textStyle="italic"/>
 
-        <TextView
-            android:id="@+id/airing_title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:scrollbars="horizontal"
-            android:textSize="@dimen/airing_title_size"
-            android:textStyle="italic"/>
-    </ScrollView>
-
-    <ScrollView
+    <TextView
+        android:id="@+id/airing_description"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="2">
-
-        <TextView
-            android:id="@+id/airing_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="vertical"
-            android:textSize="@dimen/airing_description_size"/>
-    </ScrollView>
+        android:layout_weight="2"
+        android:fadeScrollbars="true"
+        android:textSize="@dimen/airing_description_size"/>
 </LinearLayout>
