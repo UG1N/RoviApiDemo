@@ -3,18 +3,32 @@ package com.demo.rovi.roviapidemo.model.internal;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.demo.rovi.roviapidemo.model.References;
+import com.demo.rovi.roviapidemo.model.schedule.Airing;
+
 public class SimpleAiringObject implements Parcelable {
     private String mSynopsisId;
     private String mImageIconId;
     private String mTitle;
 
+    public static SimpleAiringObject from(Airing fromAiring) {
+        String imageId = fromAiring.getMediaImage() != null ?
+                fromAiring.getMediaImage().getMediaImageReferences().getId() :
+                References.NOT_VALID_ID;
+
+        String synopsisId = fromAiring.getAiringReferences().getId();
+        String title = fromAiring.getAiringTitle();
+
+        return new SimpleAiringObject(synopsisId, imageId, title);
+    }
+
     public SimpleAiringObject() {
     }
 
-    public SimpleAiringObject(String synopsisId, String imageIconId, String title) {
-        mSynopsisId = synopsisId;
-        mImageIconId = imageIconId;
-        mTitle = title;
+    private SimpleAiringObject(String synopsisId, String imageId, String title) {
+        this.mSynopsisId = synopsisId;
+        this.mImageIconId = imageId;
+        this.mTitle = title;
     }
 
     public String getSynopsisId() {

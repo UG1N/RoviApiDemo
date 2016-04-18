@@ -3,11 +3,13 @@ package com.demo.rovi.roviapidemo.application;
 import android.app.Application;
 
 import com.demo.rovi.roviapidemo.R;
-import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
+import com.demo.rovi.roviapidemo.di.ApplicationComponent;
 import com.demo.rovi.roviapidemo.model.dao.auth.RestApiClientConfiguration;
+import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
 
 public class RoviApplication extends Application {
 
+    private ApplicationComponent mApplicationInjector;
     private static RoviApplication instance;
 
     private RestApiClientConfiguration mRestApiClientConfiguration;
@@ -17,8 +19,10 @@ public class RoviApplication extends Application {
         return instance;
     }
 
-    public static <T> T createRestApiServiceImpl(Class<T> serviceApiInterface) {
-        return instance.mRestApiClientConfiguration.createRestApiServiceImpl(serviceApiInterface);
+    //RoviApplication.getTemplateFile();
+
+    public static ApplicationComponent getApplicationInjector() {
+        return getInstance().mApplicationInjector;
     }
 
     @Override
@@ -26,7 +30,15 @@ public class RoviApplication extends Application {
         super.onCreate();
         instance = this;
         initRetrofit();
+        initDependencyInjection();
+
+        mApplicationInjector.inject(this);
     }
+
+    private void initDependencyInjection() {
+        mApplicationInjector = ApplicationComponent.InjectorInitializer.initialize(mRestApiClientConfiguration);
+    }
+
 
     private void initRetrofit() {
         mRestApiClientConfiguration = new RestApiClientConfiguration(this);

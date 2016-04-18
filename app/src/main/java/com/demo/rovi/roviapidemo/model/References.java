@@ -3,30 +3,24 @@ package com.demo.rovi.roviapidemo.model;
 import com.google.gson.annotations.SerializedName;
 
 public class References {
+
+    public static String NOT_VALID_ID = "-1";
+
     @SerializedName("id")
-    private long mId;
+    private String mId;
+
     @SerializedName("me")
     private String mMe;
 
-    public References(int id, String me) {
-        mId = id;
-        mMe = me;
+    public References() {
     }
 
-    public long getId() {
+    public String getId() {
         return mId;
-    }
-
-    public void setId(int id) {
-        mId = id;
     }
 
     public String getMe() {
         return mMe;
-    }
-
-    public void setMe(String me) {
-        mMe = me;
     }
 
     @Override

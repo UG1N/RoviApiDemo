@@ -12,8 +12,9 @@ import com.demo.rovi.roviapidemo.application.RoviApplication;
 import com.demo.rovi.roviapidemo.model.BackendConstants;
 import com.demo.rovi.roviapidemo.model.dao.TemplateFileDao;
 import com.demo.rovi.roviapidemo.model.internal.AbstractRxSubscriber;
-import com.demo.rovi.roviapidemo.model.restapi.ITemplateRestApi;
 import com.demo.rovi.roviapidemo.model.templatefile.TemplateFile;
+
+import javax.inject.Inject;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
@@ -23,9 +24,13 @@ public class SplashScreenActivity extends AppCompatActivity {
 
     public static final String TAG = "SplashScreenActivity";
 
+    @Inject
+    TemplateFileDao mTemplateFileDao;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        RoviApplication.getApplicationInjector().inject(this);
         setContentView(R.layout.activity_splash_screen);
 
         String templateUrl = UriTemplate.fromTemplate(BackendConstants.URL_TO_LOAD_TEMPLATE_FILE)
@@ -34,8 +39,7 @@ public class SplashScreenActivity extends AppCompatActivity {
                 .expand();
         Log.e(TAG, templateUrl);
 
-        TemplateFileDao templateFileDao = new TemplateFileDao(RoviApplication.createRestApiServiceImpl(ITemplateRestApi.class));
-        templateFileDao.getTemplateFileRx(templateUrl)
+        mTemplateFileDao.getTemplateFileRx(templateUrl)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new AbstractRxSubscriber<TemplateFile>() {

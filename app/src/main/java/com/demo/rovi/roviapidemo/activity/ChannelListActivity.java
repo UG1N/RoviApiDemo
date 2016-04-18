@@ -15,9 +15,7 @@ import com.demo.rovi.roviapidemo.model.dao.ScheduleDao;
 import com.demo.rovi.roviapidemo.model.dao.SynopsisDao;
 import com.demo.rovi.roviapidemo.model.internal.AbstractRxSubscriber;
 import com.demo.rovi.roviapidemo.model.internal.SimpleAiringObject;
-import com.demo.rovi.roviapidemo.model.restapi.IChannelsRestApi;
-import com.demo.rovi.roviapidemo.model.restapi.IScheduleRestApi;
-import com.demo.rovi.roviapidemo.model.restapi.ISynopsesRestApi;
+import com.demo.rovi.roviapidemo.model.schedule.Airing;
 import com.demo.rovi.roviapidemo.model.schedule.Schedule;
 import com.demo.rovi.roviapidemo.model.schedule.TvSchedule;
 import com.demo.rovi.roviapidemo.model.synopses.AirSynopsis;
@@ -32,6 +30,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
@@ -44,17 +44,14 @@ public class ChannelListActivity extends AppCompatActivity {
     private static final String TAG = ChannelListActivity.class.getSimpleName();
     public static final int PAGE_COUNT = 3;
 
+    private static final int NOT_DEFINED_AIRING_POSITION = -1;
+
     private TemplateFile mTemplateFile;
-    private ChannelsDao mChannelsDao;
-    private ScheduleDao mScheduleDao;
-    private SynopsisDao mSynopsisDao;
 
-    @Deprecated
-    private TvChannels mTvChannels;
-
-    private int lastlyRequestedLoadingForChannelPosition;
-    private int currentlySelectedChannelPosition;
-
+    private int mTotalChannelsAmount;
+    private int mCurrentTenSelectedChannels;
+    private int mLastlyRequestedLoadingForChannelPosition;
+    private int mCurrentlySelectedChannelPosition;
 
     @Bind(R.id.recycler_view)
     ChannelsHorizontalListView mChannelsListView;
@@ -68,18 +65,28 @@ public class ChannelListActivity extends AppCompatActivity {
     @Bind(R.id.airing_description)
     TextView mAiringDescriptionTextView;
 
+    @Inject
+    ChannelsDao mChannelsDao;
+
+    @Inject
+    ScheduleDao mScheduleDao;
+
+    @Inject
+    SynopsisDao mSynopsisDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e(TAG, "onCreate: ");
         initDaos();
 
         setContentView(R.layout.channel_list_activity);
         if (savedInstanceState == null) {
-            currentlySelectedChannelPosition = 1;
+            mCurrentlySelectedChannelPosition = 1;
         }
         ButterKnife.bind(this);
-        mTemplateFile = RoviApplication.getInstance().getTemplateFile();
+        RoviApplication.getApplicationInjector().inject(this);
+
 
         initAiringsPager();
         loadInitialChannelsChunk();
@@ -87,9 +94,8 @@ public class ChannelListActivity extends AppCompatActivity {
     }
 
     private void initDaos() {
-        mChannelsDao = new ChannelsDao(RoviApplication.createRestApiServiceImpl(IChannelsRestApi.class));
-        mScheduleDao = new ScheduleDao(RoviApplication.createRestApiServiceImpl(IScheduleRestApi.class));
-        mSynopsisDao = new SynopsisDao(RoviApplication.createRestApiServiceImpl(ISynopsesRestApi.class));
+        mTemplateFile = RoviApplication.getInstance().getTemplateFile();
+        RoviApplication.getApplicationInjector().inject(this);
     }
 
     private void initAiringsPager() {
@@ -107,9 +113,10 @@ public class ChannelListActivity extends AppCompatActivity {
                 .flatMap(new Func1<TvChannels, Observable<TvSchedule>>() {
                     @Override
                     public Observable<TvSchedule> call(TvChannels tvChannels) {
-                        mTvChannels = tvChannels;
+                        mCurrentTenSelectedChannels = tvChannels.getPageNumber();
+                        mTotalChannelsAmount = tvChannels.getTotalChannels();
                         mChannelsListView.appendData(tvChannels.getChannels());
-                        return loadScheduleDataForChannel(currentlySelectedChannelPosition);
+                        return loadScheduleDataForChannel(mCurrentlySelectedChannelPosition);
                     }
                 })
                 .subscribeOn(Schedulers.io())
@@ -117,7 +124,7 @@ public class ChannelListActivity extends AppCompatActivity {
                 .subscribe(new AbstractRxSubscriber<TvSchedule>() {
                     @Override
                     public void onNext(TvSchedule tvSchedule) {
-                        updateAirPageAdapter(tvSchedule.getScheduleForChannel());
+                        updateAirPageAdapterAndDescriptionContainer(tvSchedule.getScheduleForChannel());
                     }
                 });
     }
@@ -126,7 +133,7 @@ public class ChannelListActivity extends AppCompatActivity {
         mChannelsListView.setOnListEndNotificationListener(new ChannelsHorizontalListView.OnListEndNotificationListener() {
             @Override
             public void onListEnd(int lastCompletelyVisibleItemPosition) {
-                final boolean isLastPage = mTvChannels.getTotalChannels() == lastCompletelyVisibleItemPosition + 1;
+                final boolean isLastPage = mTotalChannelsAmount == lastCompletelyVisibleItemPosition + 1;
                 if (!isLastPage) {
                     triggerLoadAdditionalChannelItems(lastCompletelyVisibleItemPosition);
                 }
@@ -136,14 +143,14 @@ public class ChannelListActivity extends AppCompatActivity {
         mChannelsListView.setOnChannelSelectionListener(new ChannelsHorizontalListView.ChannelItemSelectionListener() {
             @Override
             public void onChannelClick(int channelClickedPosition) {
-                currentlySelectedChannelPosition = channelClickedPosition;
+                mCurrentlySelectedChannelPosition = channelClickedPosition;
                 loadScheduleDataForChannel(channelClickedPosition)
                         .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new AbstractRxSubscriber<TvSchedule>() {
                             @Override
                             public void onNext(TvSchedule tvSchedule) {
-                                updateAirPageAdapter(tvSchedule.getScheduleForChannel());
+                                updateAirPageAdapterAndDescriptionContainer(tvSchedule.getScheduleForChannel());
                             }
                         });
             }
@@ -151,19 +158,19 @@ public class ChannelListActivity extends AppCompatActivity {
     }
 
     private void triggerLoadAdditionalChannelItems(int lastCompletelyVisibleItemPosition) {
-        if (lastlyRequestedLoadingForChannelPosition != lastCompletelyVisibleItemPosition) {
+        if (mLastlyRequestedLoadingForChannelPosition != lastCompletelyVisibleItemPosition) {
             Log.e(TAG, "triggerLoadAdditionalChannelItems");
-            lastlyRequestedLoadingForChannelPosition = lastCompletelyVisibleItemPosition;
+            mLastlyRequestedLoadingForChannelPosition = lastCompletelyVisibleItemPosition;
 
-            loadChannelsDataForPage(mTvChannels.getPageNumber() + 1)
+            loadChannelsDataForPage(mCurrentTenSelectedChannels + 1)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new AbstractRxSubscriber<TvChannels>() {
                         @Override
                         public void onNext(TvChannels loadedData) {
-                            mTvChannels = loadedData;
+                            mCurrentTenSelectedChannels = loadedData.getPageNumber();
                             mChannelsListView.appendData(loadedData.getChannels());
-                            lastlyRequestedLoadingForChannelPosition = 0;
+                            mLastlyRequestedLoadingForChannelPosition = 0;
                         }
                     });
         }
@@ -172,6 +179,15 @@ public class ChannelListActivity extends AppCompatActivity {
     private void bindBottomDescriptionContainer(int position) {
         mAiringTitleTextView.setText(mAirViewPager.getTitle(position));
         loadDescriptionOfSelectedAir(mAirViewPager.getSynopsisId(position));
+    }
+
+    private Observable<TvChannels> loadChannelsDataForPage(int pageNumber) {
+        String channelsLoadingUrl = UriTemplate
+                .fromTemplate(mTemplateFile.getTemplate().getServiceChannels().getChannels())
+                .set("id", BackendConstants.TELEVISION_SERVICE)
+                .set("page", pageNumber)
+                .expand();
+        return mChannelsDao.getChannels(channelsLoadingUrl);
     }
 
     private Observable<TvSchedule> loadScheduleDataForChannel(final int position) {
@@ -187,19 +203,9 @@ public class ChannelListActivity extends AppCompatActivity {
         return mScheduleDao.getSchedule(schedulesLoadingUrl);
     }
 
-    private Observable<TvChannels> loadChannelsDataForPage(int pageNumber) {
-        String channelsLoadingUrl = UriTemplate
-                .fromTemplate(mTemplateFile.getTemplate().getServiceChannels().getChannels())
-                .set("id", BackendConstants.TELEVISION_SERVICE)
-                .set("page", pageNumber)
-                .expand();
-        return mChannelsDao.getChannels(channelsLoadingUrl);
-    }
-
-    private void loadDescriptionOfSelectedAir(final String urlId) {
-        Log.e(TAG, "url id in if- > " + urlId);
-
-        mSynopsisDao.getSynopsis(getUrlForAirSynopsis(urlId))
+    private void loadDescriptionOfSelectedAir(final String synopsisId) {
+        Log.e(TAG, "loadDescriptionOfSelectedAir: " + synopsisId);
+        mSynopsisDao.getSynopsis(getUrlForAirSynopsis(synopsisId))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new AbstractRxSubscriber<AirSynopsis>() {
@@ -236,65 +242,62 @@ public class ChannelListActivity extends AppCompatActivity {
                 .expand();
     }
 
-    private void updateAirPageAdapter(Schedule airSchedule) {
-        List<SimpleAiringObject> list = new ArrayList<>();
-        int currentAirFromSchedule = 0;
-        long currentTimeInMs = System.currentTimeMillis();
-
-        for (int i = 0; i < airSchedule.getAirings().size(); i++) {
-            if (airSchedule.getAirings().get(i).getStartAir().getTime() <= currentTimeInMs
-                    && currentTimeInMs <= airSchedule.getAirings().get(i).getEndAir().getTime()) {
-                currentAirFromSchedule = i;
-                break;
-            }
-        }
-        // - deprecated,  smth with this method
-        for (int i = 0; i < PAGE_COUNT; i++) {
-            if (airSchedule.getAirings().size() == 1 && currentAirFromSchedule == 0) {
-                list.add(getAirFromSchedule(airSchedule, currentAirFromSchedule));
-            } else if (currentAirFromSchedule == 0 && i <= 1) {
-                list.add(getAirFromSchedule(airSchedule, currentAirFromSchedule));
-            } else if (currentAirFromSchedule == 0) {
-                list.add(getAirFromSchedule(airSchedule, currentAirFromSchedule + 1));
-            } else if (airSchedule.getAirings().size() == currentAirFromSchedule + 1 && i > 1) {
-                list.add(getAirFromSchedule(airSchedule, currentAirFromSchedule));
-            } else {
-                list.add(getAirFromSchedule(airSchedule, currentAirFromSchedule + i - 1));
-            }
+    private void updateAirPageAdapterAndDescriptionContainer(Schedule airSchedule) {
+        final int currentAirFromSchedule = getCurrentAirPositionFromSchedule(airSchedule);
+        if (currentAirFromSchedule == NOT_DEFINED_AIRING_POSITION) {
+            return;
         }
 
-        mAirViewPager.update(list);
+        final List<SimpleAiringObject> airingsData = extractAiringsFromSchedule(airSchedule, currentAirFromSchedule);
+        mAirViewPager.update(airingsData);
         mAirViewPager.setCurrentItem(1);
 
         bindBottomDescriptionContainer(1);
     }
 
-    private SimpleAiringObject getAirFromSchedule(Schedule schedule, int numberOfAir) {
-        String imageId;
-        if (schedule.getAirings().get(numberOfAir).getMediaImage() != null) {
-            imageId = (String.valueOf(schedule.getAirings().get(numberOfAir)
-                    .getMediaImage().getMediaImageReferences().getId()));
-        } else {
-            imageId = (String.valueOf(-1));
-        }
-        String synopsisId = String.valueOf(schedule.getAirings().get(numberOfAir)
-                .getAiringReferences().getId());
-        String title = schedule.getAirings().get(numberOfAir).getAiringTitle();
+    private List<SimpleAiringObject> extractAiringsFromSchedule(Schedule airSchedule, int currentAirFromSchedule) {
+        List<SimpleAiringObject> list = new ArrayList<>();
+        for (int i = 0; i < PAGE_COUNT; i++) {
+            boolean isSingleAir = airSchedule.getAirings().size() == 1;
+            boolean isFirstAirOfTheDay = currentAirFromSchedule == 0 && i <= 1;
+            boolean isLastAirOfTheDay = airSchedule.getAirings().size() == currentAirFromSchedule + 1
+                    && i > 1;
 
-        return new SimpleAiringObject(synopsisId, imageId, title);
+            final Airing airing;
+            if (isSingleAir || isFirstAirOfTheDay || isLastAirOfTheDay) {
+                airing = airSchedule.getAirings().get(currentAirFromSchedule);
+            } else {
+                airing = airSchedule.getAirings().get(currentAirFromSchedule + i - 1);
+            }
+
+            list.add(SimpleAiringObject.from(airing));
+        }
+        return list;
     }
+
+    private int getCurrentAirPositionFromSchedule(Schedule airSchedule) {
+        final long currentTimeInMs = System.currentTimeMillis();
+        for (int i = 0; i < airSchedule.getAirings().size(); i++) {
+            if (airSchedule.getAirings().get(i).getStartAir().getTime() <= currentTimeInMs
+                    && currentTimeInMs <= airSchedule.getAirings().get(i).getEndAir().getTime()) {
+                return i;
+            }
+        }
+        return NOT_DEFINED_AIRING_POSITION;
+    }
+
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putInt("currentlySelectedChannelPosition", currentlySelectedChannelPosition);
+        outState.putInt("mCurrentlySelectedChannelPosition", mCurrentlySelectedChannelPosition);
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         if (savedInstanceState != null) {
-            currentlySelectedChannelPosition = savedInstanceState.getInt("currentlySelectedChannelPosition");
+            mCurrentlySelectedChannelPosition = savedInstanceState.getInt("mCurrentlySelectedChannelPosition");
         }
     }
 }
